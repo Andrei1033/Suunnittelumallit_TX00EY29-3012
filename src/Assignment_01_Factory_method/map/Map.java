@@ -1,16 +1,11 @@
 package Assignment_01_Factory_method.map;
 
-import java.util.Scanner;
+import Assignment_01_Factory_method.tile.Tile;
 
 public abstract class Map {
-    public void play() {
-        Scanner scanner = new Scanner(System.in);
-        Map map;
-        do {
-            map = createMap();
-            map.create();
-            System.out.println("Press enter to swich the map ('q' to quit).");
-        } while (!scanner.nextLine().equals("q"));
+    public abstract Tile createTile();
+
+    public void display(){
+
     }
-    public abstract Map createMap();
 }

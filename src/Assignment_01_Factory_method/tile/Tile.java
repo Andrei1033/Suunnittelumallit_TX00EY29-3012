@@ -1,5 +1,8 @@
 package Assignment_01_Factory_method.tile;
 
-public interface Tile {
-    void create();
+public abstract class Tile {
+
+    public abstract  char getCharacter();
+
+    public abstract  String getType();
 }
