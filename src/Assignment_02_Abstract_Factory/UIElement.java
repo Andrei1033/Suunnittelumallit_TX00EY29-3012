@@ -9,4 +9,8 @@ public abstract class UIElement {
     }
 
     public abstract void display();
+
+    public void setText(String submit) {
+        this.text = submit;
+    }
 }
