@@ -1,0 +1,3 @@
+Simulation started
+Processing data...
+Simulation finished
