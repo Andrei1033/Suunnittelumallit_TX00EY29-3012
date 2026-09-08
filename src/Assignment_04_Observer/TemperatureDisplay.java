@@ -1,4 +1,14 @@
 package Assignment_04_Observer;
 
-public class TemperatureDisplay {
+public class TemperatureDisplay implements WeatherObserver {
+    private final String name;
+
+    public TemperatureDisplay(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void update(int temperature) {
+        System.out.println(name + " Current temperature is: " + temperature + "°C");
+    }
 }

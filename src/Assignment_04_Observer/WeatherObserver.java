@@ -1,4 +1,6 @@
 package Assignment_04_Observer;
 
-public class WeatherObserver {
+public interface WeatherObserver {
+
+    void update(int temperature);
 }
