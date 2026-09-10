@@ -83,3 +83,18 @@ public class MasterState implements CharacterState {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//iso kakka ohjelma
