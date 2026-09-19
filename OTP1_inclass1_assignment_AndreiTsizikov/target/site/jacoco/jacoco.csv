@@ -1,3 +1,3 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-OTP1_inclass1_assignment_AndreiTsizikov,default,main,34,0,0,0,11,0,2,0,2,0
-OTP1_inclass1_assignment_AndreiTsizikov,default,TemperatureConverter,0,31,0,4,0,4,0,6,0,4
+OTP1_inclass1_assignment_AndreiTsizikov,default,main,44,0,0,0,14,0,2,0,2,0
+OTP1_inclass1_assignment_AndreiTsizikov,default,TemperatureConverter,0,35,0,4,0,5,0,7,0,5

@@ -8,6 +8,10 @@ public class main {
         celsius = TemperatureConverter.fahrenheitToCelsius(fahrenheit);
         System.out.println(fahrenheit + "°F is equal to " + celsius + "°C");
 
+        double kelvin = 298.15;
+        celsius = TemperatureConverter.kelvinToCelsius(kelvin);
+        System.out.println(kelvin + "K is equal to " + celsius + "°C");
+
         double extremeTemp = -50.0;
         boolean isExtreme = TemperatureConverter.isExtremeTemperature(extremeTemp);
         System.out.println(extremeTemp + "°C is extreme: " + isExtreme);
