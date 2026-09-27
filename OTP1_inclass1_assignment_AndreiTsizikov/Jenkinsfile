@@ -17,26 +17,39 @@ pipeline {
                 git 'https://github.com/Andrei1033/Suunnittelumallit_TX00EY29-3012'
             }
         }
+
         stage ('build'){
             steps{
-                bat 'mvn clean install'
+                // Переходим в подпапку, где лежит pom.xml
+                dir('OTP1_inclass1_assignment_AndreiTsizikov') {
+                    bat 'mvn clean install'
+                }
             }
         }
 
         stage('test') {
             steps{
-                bat 'mvn test'
+                // Также выполняем тесты из папки с проектом
+                dir('OTP1_inclass1_assignment_AndreiTsizikov') {
+                    bat 'mvn test'
+                }
             }
         }
+
         stage('jacoco'){
             steps{
                 jacoco()
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKERHUB_REPO}:${DOCKER_IMAGE_TAG}")
+                    // Если Dockerfile лежит в корне репозитория, оставьте без dir.
+                    // Если Dockerfile лежит внутри папки проекта, используйте dir, как указано ниже:
+                    dir('OTP1_inclass1_assignment_AndreiTsizikov') {
+                        docker.build("${DOCKERHUB_REPO}:${DOCKER_IMAGE_TAG}")
+                    }
                 }
             }
         }
