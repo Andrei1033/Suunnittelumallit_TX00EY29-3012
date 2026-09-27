@@ -1,5 +1,12 @@
-FROM maven:3.9.6-eclipse-temurin-21
+# ----- Этап 1: сборка -----
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
-RUN mvn package
-CMD ["java", "-jar", "target/main.jar"]
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# ----- Этап 2: запуск -----
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /app/target/cal_3012.jar app.jar
+CMD ["java", "-jar", "app.jar"]

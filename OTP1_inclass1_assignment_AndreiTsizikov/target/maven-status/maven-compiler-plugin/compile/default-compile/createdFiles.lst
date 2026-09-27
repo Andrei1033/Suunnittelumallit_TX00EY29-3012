@@ -1,2 +1,2 @@
-TemperatureConverter.class
-main.class
+org\example\Main.class
+org\example\TemperatureConverter.class
