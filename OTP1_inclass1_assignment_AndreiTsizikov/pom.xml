@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>cal_3012</artifactId>
+    <artifactId>temperature_converter</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -38,7 +38,7 @@
     </dependencies>
 
     <build>
-        <finalName>cal_3012</finalName>
+        <finalName>temperature_converter</finalName>
         <plugins>
 
             <!-- JAR Plugin: указываем главный класс -->

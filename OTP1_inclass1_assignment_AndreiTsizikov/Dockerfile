@@ -8,5 +8,5 @@ RUN mvn clean package -DskipTests
 # ----- Этап 2: запуск -----
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/target/cal_3012.jar app.jar
+COPY --from=build /app/target/temperature_converter.jar app.jar
 CMD ["java", "-jar", "app.jar"]
