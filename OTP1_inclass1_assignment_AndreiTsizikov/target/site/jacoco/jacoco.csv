@@ -1,3 +1,10 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-temperature_converter,org.example,Main,44,0,0,0,14,0,2,0,2,0
-temperature_converter,org.example,TemperatureConverter,0,35,0,4,0,5,0,7,0,5
+temperature_converter,org.example.DBConnectors,DBConnection,170,0,14,0,61,0,18,0,11,0
+temperature_converter,org.example.DBConnectors,TempRecord,81,0,0,0,34,0,15,0,15,0
+temperature_converter,org.example.DBConnectors,TemperatureUnit,64,15,4,0,20,6,12,2,10,2
+temperature_converter,org.example.DaoElements,TemperatureUnitDAO,117,0,12,0,33,0,11,0,5,0
+temperature_converter,org.example.DaoElements,TempRecordDAO,131,0,6,0,37,0,6,0,3,0
+temperature_converter,controller,TemperatureController,259,0,16,0,66,0,16,0,8,0
+temperature_converter,org.example,Main,7,0,0,0,3,0,2,0,2,0
+temperature_converter,org.example,TemperatureConverter,0,94,0,16,0,16,0,15,0,5
+temperature_converter,org.example.view,TemperatureApp,318,0,2,0,56,0,9,0,8,0
