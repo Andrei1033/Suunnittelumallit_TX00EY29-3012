@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TemperatureUnitDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">temperature_converter</a> &gt; <a href="index.source.html" class="el_package">org.example.DaoElements</a> &gt; <span class="el_source">TemperatureUnitDAO.java</span></div><h1>TemperatureUnitDAO.java</h1><pre class="source lang-java linenums">package org.example.DaoElements;
+
+import org.example.DBConnectors.DBConnection;
+import org.example.DBConnectors.TemperatureUnit;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+<span class="nc" id="L11">public class TemperatureUnitDAO {</span>
+
+    public List&lt;TemperatureUnit&gt; findAll() throws SQLException {
+<span class="nc" id="L14">        String sql = &quot;SELECT id, name, symbol FROM temperature_unit ORDER BY id&quot;;</span>
+<span class="nc" id="L15">        List&lt;TemperatureUnit&gt; result = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L17">        try (Connection conn = DBConnection.getConnection();</span>
+<span class="nc" id="L18">             Statement stmt = conn.createStatement();</span>
+<span class="nc" id="L19">             ResultSet rs = stmt.executeQuery(sql)) {</span>
+
+<span class="nc bnc" id="L21" title="All 2 branches missed.">            while (rs.next()) {</span>
+<span class="nc" id="L22">                result.add(mapRow(rs));</span>
+            }
+        }
+<span class="nc" id="L25">        return result;</span>
+    }
+
+    public Optional&lt;TemperatureUnit&gt; findByName(String name) throws SQLException {
+<span class="nc" id="L29">        String sql = &quot;SELECT id, name, symbol FROM temperature_unit WHERE name = ?&quot;;</span>
+
+<span class="nc" id="L31">        try (Connection conn = DBConnection.getConnection();</span>
+<span class="nc" id="L32">             PreparedStatement ps = conn.prepareStatement(sql)) {</span>
+
+<span class="nc" id="L34">            ps.setString(1, name);</span>
+
+<span class="nc" id="L36">            try (ResultSet rs = ps.executeQuery()) {</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">                if (rs.next()) {</span>
+<span class="nc" id="L38">                    return Optional.of(mapRow(rs));</span>
+                }
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            }</span>
+<span class="nc bnc" id="L41" title="All 4 branches missed.">        }</span>
+<span class="nc" id="L42">        return Optional.empty();</span>
+    }
+
+    public TemperatureUnit insert(TemperatureUnit unit) throws SQLException {
+<span class="nc" id="L46">        String sql = &quot;INSERT INTO temperature_unit (name, symbol) VALUES (?, ?)&quot;;</span>
+
+<span class="nc" id="L48">        try (Connection conn = DBConnection.getConnection();</span>
+<span class="nc" id="L49">             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {</span>
+
+<span class="nc" id="L51">            ps.setString(1, unit.getName());</span>
+<span class="nc" id="L52">            ps.setString(2, unit.getSymbol());</span>
+<span class="nc" id="L53">            ps.executeUpdate();</span>
+
+<span class="nc" id="L55">            try (ResultSet keys = ps.getGeneratedKeys()) {</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">                if (keys.next()) {</span>
+<span class="nc" id="L57">                    unit.setId(keys.getInt(1));</span>
+                }
+            }
+        }
+<span class="nc" id="L61">        return unit;</span>
+    }
+
+    private TemperatureUnit mapRow(ResultSet rs) throws SQLException {
+<span class="nc" id="L65">        return new TemperatureUnit(</span>
+<span class="nc" id="L66">                rs.getInt(&quot;id&quot;),</span>
+<span class="nc" id="L67">                rs.getString(&quot;name&quot;),</span>
+<span class="nc" id="L68">                rs.getString(&quot;symbol&quot;)</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

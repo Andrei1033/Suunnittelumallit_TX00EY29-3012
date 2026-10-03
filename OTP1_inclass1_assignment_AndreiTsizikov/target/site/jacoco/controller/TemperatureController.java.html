@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TemperatureController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">temperature_converter</a> &gt; <a href="index.source.html" class="el_package">controller</a> &gt; <span class="el_source">TemperatureController.java</span></div><h1>TemperatureController.java</h1><pre class="source lang-java linenums">package controller;
+
+import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import org.example.DBConnectors.TempRecord;
+import org.example.DBConnectors.TemperatureUnit;
+import org.example.DaoElements.TempRecordDAO;
+import org.example.DaoElements.TemperatureUnitDAO;
+import org.example.TemperatureConverter;
+
+import java.sql.SQLException;
+import java.util.List;
+
+<span class="nc" id="L17">public class TemperatureController {</span>
+
+<span class="nc" id="L19">    private final TemperatureUnitDAO unitDAO = new TemperatureUnitDAO();</span>
+<span class="nc" id="L20">    private final TempRecordDAO recordDAO = new TempRecordDAO();</span>
+
+    private ComboBox&lt;TemperatureUnit&gt; fromBox;
+    private ComboBox&lt;TemperatureUnit&gt; toBox;
+    private TextField valueField;
+    private Label resultLabel;
+    private Label extremeLabel;
+    private TableView&lt;TempRecord&gt; table;
+
+    public void init(ComboBox&lt;TemperatureUnit&gt; fromBox,
+                     ComboBox&lt;TemperatureUnit&gt; toBox,
+                     TextField valueField,
+                     Label resultLabel,
+                     Label extremeLabel,
+                     TableView&lt;TempRecord&gt; table) {
+
+<span class="nc" id="L36">        this.fromBox = fromBox;</span>
+<span class="nc" id="L37">        this.toBox = toBox;</span>
+<span class="nc" id="L38">        this.valueField = valueField;</span>
+<span class="nc" id="L39">        this.resultLabel = resultLabel;</span>
+<span class="nc" id="L40">        this.extremeLabel = extremeLabel;</span>
+<span class="nc" id="L41">        this.table = table;</span>
+
+<span class="nc" id="L43">        loadUnits();</span>
+<span class="nc" id="L44">        loadHistory();</span>
+<span class="nc" id="L45">    }</span>
+
+    private void loadUnits() {
+        try {
+<span class="nc" id="L49">            List&lt;TemperatureUnit&gt; units = unitDAO.findAll();</span>
+<span class="nc" id="L50">            fromBox.setItems(FXCollections.observableArrayList(units));</span>
+<span class="nc" id="L51">            toBox.setItems(FXCollections.observableArrayList(units));</span>
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (!units.isEmpty()) {</span>
+<span class="nc" id="L54">                fromBox.getSelectionModel().select(findByName(units, TemperatureConverter.CELSIUS));</span>
+<span class="nc" id="L55">                toBox.getSelectionModel().select(findByName(units, TemperatureConverter.FAHRENHEIT));</span>
+            }
+<span class="nc" id="L57">        } catch (SQLException e) {</span>
+<span class="nc" id="L58">            showError(&quot;Could not load units&quot;, e);</span>
+<span class="nc" id="L59">        }</span>
+<span class="nc" id="L60">    }</span>
+
+    private TemperatureUnit findByName(List&lt;TemperatureUnit&gt; units, String name) {
+<span class="nc" id="L63">        return units.stream()</span>
+<span class="nc" id="L64">                .filter(u -&gt; u.getName().equals(name))</span>
+<span class="nc" id="L65">                .findFirst()</span>
+<span class="nc" id="L66">                .orElse(units.get(0));</span>
+    }
+
+    private void loadHistory() {
+        try {
+<span class="nc" id="L71">            List&lt;TempRecord&gt; records = recordDAO.findAll();</span>
+<span class="nc" id="L72">            table.setItems(FXCollections.observableArrayList(records));</span>
+<span class="nc" id="L73">        } catch (SQLException e) {</span>
+<span class="nc" id="L74">            showError(&quot;Could not load history&quot;, e);</span>
+<span class="nc" id="L75">        }</span>
+<span class="nc" id="L76">    }</span>
+
+    public void onConvert() {
+<span class="nc" id="L79">        TemperatureUnit from = fromBox.getValue();</span>
+<span class="nc" id="L80">        TemperatureUnit to = toBox.getValue();</span>
+
+<span class="nc bnc" id="L82" title="All 4 branches missed.">        if (from == null || to == null) {</span>
+<span class="nc" id="L83">            showError(&quot;Select both units&quot;, null);</span>
+<span class="nc" id="L84">            return;</span>
+        }
+
+<span class="nc" id="L87">        String raw = valueField.getText();</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">        if (raw == null || raw.isBlank()) {</span>
+<span class="nc" id="L89">            showError(&quot;Enter a value&quot;, null);</span>
+<span class="nc" id="L90">            return;</span>
+        }
+
+        double input;
+        try {
+<span class="nc" id="L95">            input = Double.parseDouble(raw.replace(',', '.'));</span>
+<span class="nc" id="L96">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L97">            showError(&quot;Value must be a number&quot;, null);</span>
+<span class="nc" id="L98">            return;</span>
+<span class="nc" id="L99">        }</span>
+
+<span class="nc" id="L101">        double output = TemperatureConverter.convert(input, from, to);</span>
+
+<span class="nc" id="L103">        resultLabel.setText(String.format(&quot;%.2f %s = %.2f %s&quot;,</span>
+<span class="nc" id="L104">                input, from.getSymbol(), output, to.getSymbol()));</span>
+
+<span class="nc" id="L106">        boolean extreme = TemperatureConverter.isExtreme(input, from.getName());</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        extremeLabel.setText(extreme ? &quot;⚠ Extreme temperature&quot; : &quot;&quot;);</span>
+
+        try {
+<span class="nc" id="L110">            TempRecord record = new TempRecord(from, to, input, output);</span>
+<span class="nc" id="L111">            recordDAO.save(record);</span>
+<span class="nc" id="L112">            loadHistory();</span>
+<span class="nc" id="L113">        } catch (SQLException e) {</span>
+<span class="nc" id="L114">            showError(&quot;Could not save record&quot;, e);</span>
+<span class="nc" id="L115">        }</span>
+<span class="nc" id="L116">    }</span>
+
+    private void showError(String message, Exception e) {
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        String details = (e == null) ? &quot;&quot; : (&quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L120">        System.err.println(message + details);</span>
+
+<span class="nc" id="L122">        javafx.scene.control.Alert alert =</span>
+                new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+<span class="nc" id="L124">        alert.setTitle(&quot;Error&quot;);</span>
+<span class="nc" id="L125">        alert.setHeaderText(message);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        alert.setContentText(e == null ? null : e.getMessage());</span>
+<span class="nc" id="L127">        alert.showAndWait();</span>
+<span class="nc" id="L128">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DBConnection.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">temperature_converter</a> &gt; <a href="index.source.html" class="el_package">org.example.DBConnectors</a> &gt; <span class="el_source">DBConnection.java</span></div><h1>DBConnection.java</h1><pre class="source lang-java linenums">package org.example.DBConnectors;
+
+import java.io.*;
+
+import java.sql.*;
+import java.util.Properties;
+
+public class DBConnection {
+
+    private static final String PROPERTIES_FILE = &quot;database.properties&quot;;
+
+    private static final String DEFAULT_URL = &quot;jdbc:h2:./data/temperature_db;AUTO_SERVER=TRUE&quot;;
+    private static final String DEFAULT_USER = &quot;sa&quot;;
+    private static final String DEFAULT_PASSWORD = &quot;&quot;;
+
+    private static String url;
+    private static String user;
+    private static String password;
+
+    static {
+        try {
+<span class="nc" id="L22">            Class.forName(&quot;org.h2.Driver&quot;);</span>
+<span class="nc" id="L23">        } catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L24">            throw new RuntimeException(&quot;H2 driver not found. Check pom.xml.&quot;, e);</span>
+<span class="nc" id="L25">        }</span>
+<span class="nc" id="L26">        loadConfig();</span>
+<span class="nc" id="L27">    }</span>
+
+    private DBConnection() {
+    }
+
+    private static void loadConfig() {
+<span class="nc" id="L33">        Properties props = new Properties();</span>
+
+<span class="nc" id="L35">        try (InputStream in = DBConnection.class</span>
+<span class="nc" id="L36">                .getClassLoader()</span>
+<span class="nc" id="L37">                .getResourceAsStream(PROPERTIES_FILE)) {</span>
+
+<span class="nc bnc" id="L39" title="All 2 branches missed.">            if (in != null) {</span>
+<span class="nc" id="L40">                props.load(in);</span>
+            }
+<span class="nc" id="L42">        } catch (IOException e) {</span>
+<span class="nc" id="L43">            System.err.println(&quot;Could not load &quot; + PROPERTIES_FILE + &quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L44">        }</span>
+
+        // Prioriteetti: ympäristömuuttuja &gt; properties-tiedosto &gt; oletus
+<span class="nc" id="L47">        url = getEnvOrProp(&quot;DB_URL&quot;, props, &quot;db.url&quot;, DEFAULT_URL);</span>
+<span class="nc" id="L48">        user = getEnvOrProp(&quot;DB_USER&quot;, props, &quot;db.user&quot;, DEFAULT_USER);</span>
+<span class="nc" id="L49">        password = getEnvOrProp(&quot;DB_PASSWORD&quot;, props, &quot;db.password&quot;, DEFAULT_PASSWORD);</span>
+<span class="nc" id="L50">    }</span>
+
+    private static String getEnvOrProp(String envKey, Properties props, String propKey, String fallback) {
+<span class="nc" id="L53">        String env = System.getenv(envKey);</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">        if (env != null &amp;&amp; !env.isBlank()) {</span>
+<span class="nc" id="L55">            return env;</span>
+        }
+<span class="nc" id="L57">        String prop = props.getProperty(propKey);</span>
+<span class="nc bnc" id="L58" title="All 4 branches missed.">        if (prop != null &amp;&amp; !prop.isBlank()) {</span>
+<span class="nc" id="L59">            return prop;</span>
+        }
+<span class="nc" id="L61">        return fallback;</span>
+    }
+
+    public static void setUrl(String newUrl) {
+<span class="nc" id="L65">        url = newUrl;</span>
+<span class="nc" id="L66">    }</span>
+
+    public static void setCredentials(String newUser, String newPassword) {
+<span class="nc" id="L69">        user = newUser;</span>
+<span class="nc" id="L70">        password = newPassword;</span>
+<span class="nc" id="L71">    }</span>
+
+    public static void resetToDefault() {
+<span class="nc" id="L74">        loadConfig();</span>
+<span class="nc" id="L75">    }</span>
+
+    public static Connection getConnection() throws SQLException {
+<span class="nc" id="L78">        return DriverManager.getConnection(url, user, password);</span>
+    }
+
+    public static void initialize() throws SQLException {
+<span class="nc" id="L82">        try (Connection conn = getConnection();</span>
+<span class="nc" id="L83">             Statement stmt = conn.createStatement()) {</span>
+
+<span class="nc" id="L85">            stmt.execute(&quot;&quot;&quot;</span>
+                CREATE TABLE IF NOT EXISTS temperature_unit (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(50) NOT NULL UNIQUE,
+                    symbol VARCHAR(10) NOT NULL
+                )
+                &quot;&quot;&quot;);
+
+<span class="nc" id="L93">            stmt.execute(&quot;&quot;&quot;</span>
+                CREATE TABLE IF NOT EXISTS conversion_record (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    source_unit_id INT NOT NULL,
+                    target_unit_id INT NOT NULL,
+                    input_value DOUBLE NOT NULL,
+                    output_value DOUBLE NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (source_unit_id) REFERENCES temperature_unit(id),
+                    FOREIGN KEY (target_unit_id) REFERENCES temperature_unit(id)
+                )
+                &quot;&quot;&quot;);
+        }
+
+<span class="nc" id="L107">        seedUnits();</span>
+<span class="nc" id="L108">    }</span>
+
+    private static void seedUnits() throws SQLException {
+<span class="nc" id="L111">        insertUnitIfMissing(&quot;Celsius&quot;, &quot;°C&quot;);</span>
+<span class="nc" id="L112">        insertUnitIfMissing(&quot;Fahrenheit&quot;, &quot;°F&quot;);</span>
+<span class="nc" id="L113">        insertUnitIfMissing(&quot;Kelvin&quot;, &quot;K&quot;);</span>
+<span class="nc" id="L114">    }</span>
+
+    private static void insertUnitIfMissing(String name, String symbol) throws SQLException {
+<span class="nc" id="L117">        String checkSql = &quot;SELECT COUNT(*) FROM temperature_unit WHERE name = ?&quot;;</span>
+<span class="nc" id="L118">        String insertSql = &quot;INSERT INTO temperature_unit (name, symbol) VALUES (?, ?)&quot;;</span>
+
+<span class="nc" id="L120">        try (Connection conn = getConnection();</span>
+<span class="nc" id="L121">             PreparedStatement check = conn.prepareStatement(checkSql);</span>
+<span class="nc" id="L122">             PreparedStatement insert = conn.prepareStatement(insertSql)) {</span>
+
+<span class="nc" id="L124">            check.setString(1, name);</span>
+
+<span class="nc" id="L126">            try (ResultSet rs = check.executeQuery()) {</span>
+<span class="nc bnc" id="L127" title="All 4 branches missed.">                if (rs.next() &amp;&amp; rs.getInt(1) == 0) {</span>
+<span class="nc" id="L128">                    insert.setString(1, name);</span>
+<span class="nc" id="L129">                    insert.setString(2, symbol);</span>
+<span class="nc" id="L130">                    insert.executeUpdate();</span>
+                }
+            }
+        }
+<span class="nc" id="L134">    }</span>
+
+    public static void clearAll() throws SQLException {
+<span class="nc" id="L137">        try (Connection conn = getConnection();</span>
+<span class="nc" id="L138">             Statement stmt = conn.createStatement()) {</span>
+<span class="nc" id="L139">            stmt.execute(&quot;DELETE FROM conversion_record&quot;);</span>
+<span class="nc" id="L140">            stmt.execute(&quot;DELETE FROM temperature_unit&quot;);</span>
+        }
+<span class="nc" id="L142">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
