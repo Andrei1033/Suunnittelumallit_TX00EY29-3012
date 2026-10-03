@@ -34,4 +34,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=build /app/target/temperature_converter.jar app.jar
 
 # Запуск через виртуальный дисплей (Xvfb)
-CMD ["java", "-jar", "app.jar"]
+CMD ["xvfb-run", "-a", "java", "-jar", "app.jar"]
