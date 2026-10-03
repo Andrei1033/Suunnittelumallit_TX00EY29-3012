@@ -1,12 +1,37 @@
-# ----- Этап 1: сборка -----
+# ============================================================
+#  Этап 1: сборка fat JAR через Maven
+# ============================================================
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
 
-# ----- Этап 2: запуск -----
+# Сначала pom.xml — кэшируем зависимости
+COPY pom.xml .
+RUN mvn -B dependency:go-offline
+
+# Затем исходники
+COPY src ./src
+RUN mvn -B clean package -DskipTests
+
+# ============================================================
+#  Этап 2: запуск
+# ============================================================
 FROM eclipse-temurin:21-jre
 WORKDIR /app
+
+# JavaFX в headless-контейнере требует виртуальный дисплей и GTK
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        xvfb \
+        libgl1 \
+        libgtk-3-0 \
+        libxtst6 \
+        libxi6 \
+        libxrender1 \
+        libxext6 \
+        fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копируем fat JAR и переименовываем в app.jar
 COPY --from=build /app/target/temperature_converter.jar app.jar
-CMD ["java", "-jar", "app.jar"]
+
+# Запуск через виртуальный дисплей (Xvfb)
+CMD ["xvfb-run", "-a", "java", "-jar", "app.jar"]
