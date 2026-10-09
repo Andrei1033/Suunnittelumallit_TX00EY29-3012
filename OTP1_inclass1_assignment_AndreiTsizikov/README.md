@@ -1,7 +1,7 @@
 OTP1_inclass1_assignment_AndreiTsizikov - README
 
 1. Assignment Description
-This repository contains a Temperature Converter assignment implemented in Java with a JavaFX GUI, H2 persistence, and unit tests. Deliverables in this folder: source (src/), build (target/), pom.xml, Dockerfile, Jenkinsfile, and test reports. Teacher can copy the OTP1_inclass1_assignment_AndreiTsizikov folder and run the project as instructed below.
+This repository contains a Temperature Converter assignment implemented in Java with a JavaFX GUI, H2 persistence, and unit tests. Deliverables in this folder: source (src/), build (target/), pom.xml, Dockerfile, Jenkinsfile, and test reports. You can copy the OTP1_inclass1_assignment_AndreiTsizikov folder and run the project as instructed below.
 
 2. Technologies & Tools Used
 - Java 21 (maven.compiler.source/target = 21)
@@ -19,7 +19,7 @@ This repository contains a Temperature Converter assignment implemented in Java 
   - controller.TemperatureController: handles UI events and coordinates model/DAO.
   - TemperatureConverter: core conversion logic (Celsius/Fahrenheit/Kelvin conversions).
   - DBConnectors and DaoElements: H2 connection, TempRecord and TemperatureUnit DAOs for persistence.
-- Decisions: used JavaFX for a lightweight desktop GUI and H2 for zero-configuration persistence so the teacher can run without external DB setup.
+- Decisions: used JavaFX for a lightweight desktop GUI and H2 for zero-configuration persistence so you can run without external DB setup.
 
 4. Testing & Quality Assurance Steps
 - Automated: mvn test runs JUnit tests (tests located in src/test/java). The included run shows: "Tests run: 27, Failures: 0, Errors: 0, Skipped: 0" (see target/surefire-reports).
@@ -49,7 +49,7 @@ Notes for Docker+GUI on Windows:
 - If firewall or display access issues occur, allow connections from the local network or configure X server security settings accordingly.
 
 Notes
-- All required sources, build files and test reports are inside this assignment folder. No .gitignore required for teacher copying — repository contains the full contents under OTP1_inclass1_assignment_AndreiTsizikov.
+- All required sources, build files and test reports are inside this assignment folder. No .gitignore required for you copying — repository contains the full contents under OTP1_inclass1_assignment_AndreiTsizikov.
 - For coverage HTML open target\site\jacoco\index.html in a browser.
 
 Contact
