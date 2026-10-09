@@ -49,7 +49,7 @@ Notes for Docker+GUI on Windows:
 - If firewall or display access issues occur, allow connections from the local network or configure X server security settings accordingly.
 
 Notes
-- All required sources, build files and test reports are inside this assignment folder. No .gitignore required for you copying — repository contains the full contents under OTP1_inclass1_assignment_AndreiTsizikov.
+- All required sources, build files and test reports are inside this assignment folder. No .gitignore used here. You just copy repository that contains the full contents under OTP1_inclass1_assignment_AndreiTsizikov.
 - For coverage HTML open target\site\jacoco\index.html in a browser.
 
 Contact
