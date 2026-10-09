@@ -30,12 +30,23 @@ This repository contains a Temperature Converter assignment implemented in Java 
 Prerequisites:
 - JDK 21 installed and JAVA_HOME set
 - Maven installed
+- (Optional, for running GUI from Docker on Windows) an X server such as Xming or VcXsrv installed and running, and display forwarding enabled
 
 Commands (run inside the OTP1_inclass1_assignment_AndreiTsizikov folder):
 - Build & tests: mvn clean package
 - Run tests only: mvn test
 - Run with JavaFX plugin: mvn javafx:run
 - Run packaged jar: java -jar target\temperature_converter.jar
+
+Docker (alternative run method):
+- Pull image from Docker Hub: docker pull andrei1033/temperature_converter:latest
+- Run GUI container on Windows with X server available:
+  docker run --rm -e DISPLAY=host.docker.internal:0.0 andrei1033/temperature_converter:latest
+
+Notes for Docker+GUI on Windows:
+- Ensure Xming or VcXsrv is running and configured to accept connections. Start Xming/VcXsrv before running the container.
+- The DISPLAY environment above uses host.docker.internal:0.0 to forward the display from the container to the host X server on Windows.
+- If firewall or display access issues occur, allow connections from the local network or configure X server security settings accordingly.
 
 Notes
 - All required sources, build files and test reports are inside this assignment folder. No .gitignore required for teacher copying — repository contains the full contents under OTP1_inclass1_assignment_AndreiTsizikov.
