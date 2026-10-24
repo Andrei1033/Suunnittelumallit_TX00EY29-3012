@@ -8,26 +8,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Controller {
-    private Model model;
-    private Gui gui;
+    private final Model model;
+    private final Gui gui;
 
-    private final List<IMemento> undoList;// Memento history
-    private final List<IMemento> redoList; // Memento history
-    private List<IMemento> history; // Memento history
+    // undoList: top of stack == current state. Bottom == oldest available state.
+    private final List<IMemento> undoList;
+    private final List<IMemento> redoList;
+    // history: every state the model has been in, in order; last entry == current state.
+    private final List<IMemento> history;
 
     public Controller(Gui gui) {
         this.model = new Model();
         this.gui = gui;
         this.undoList = new ArrayList<>();
         this.redoList = new ArrayList<>();
-        this.history = new ArrayList<>();
+        this.history  = new ArrayList<>();
+
+        // Seed with the initial state so the first undo/redo and history row are meaningful.
+        IMemento initial = model.createMemento();
+        undoList.add(initial);
+        history.add(initial);
     }
 
     // ---------- Model accessors ----------
 
     public void setOption(int optionNumber, int choice) {
-        saveToHistory();
         model.setOption(optionNumber, choice);
+        saveToHistory();                // snapshot AFTER the change
     }
 
     public int getOption(int optionNumber) {
@@ -35,25 +42,27 @@ public class Controller {
     }
 
     public void setIsSelected(boolean isSelected) {
-        saveToHistory();
         model.setIsSelected(isSelected);
+        saveToHistory();                // snapshot AFTER the change
     }
 
     public boolean getIsSelected() {
         return model.getIsSelected();
     }
 
-    // ---------- Undo / Redo ---------
+    // ---------- Undo / Redo ----------
 
     public void undo() {
-        if (undoList.isEmpty()) {
+        if (undoList.size() < 2) {
             System.out.println("Nothing to undo");
             return;
         }
-        redoList.add(model.createMemento());
+        // Move the current state to the redo stack; restore the new top of undo.
+        IMemento current = undoList.remove(undoList.size() - 1);
+        redoList.add(current);
 
-        IMemento previousState = undoList.remove(undoList.size() - 1);
-        model.restoreState(previousState);
+        IMemento previous = undoList.get(undoList.size() - 1);
+        model.restoreState(previous);
         gui.updateGui();
     }
 
@@ -62,11 +71,9 @@ public class Controller {
             System.out.println("Nothing to redo");
             return;
         }
-
-        undoList.add(model.createMemento());
-
-        IMemento nextState = redoList.remove(redoList.size() - 1);
-        model.restoreState(nextState);
+        IMemento next = redoList.remove(redoList.size() - 1);
+        undoList.add(next);             // it becomes the new current state
+        model.restoreState(next);
         gui.updateGui();
     }
 
@@ -80,21 +87,22 @@ public class Controller {
         if (index < 0 || index >= history.size()) {
             return;
         }
-        // Preserve ability to redo: save current state
-        redoList.add(model.createMemento());
+        // Keep redo working: push whatever we're on now into redo.
+        redoList.add(undoList.get(undoList.size() - 1));
 
         IMemento selected = history.get(index);
+        undoList.add(selected);         // selected becomes the new current state
         model.restoreState(selected);
         gui.updateGui();
     }
-
 
     // ---------- Internals ----------
 
     private void saveToHistory() {
         IMemento currentState = model.createMemento();
-        undoList.add(currentState);
-        history.add(currentState);
-        redoList.clear();
+        undoList.add(currentState);     // current state is now top of undo
+        history.add(currentState);      // and the latest entry in the log
+        redoList.clear();               // a new change invalidates redo
     }
 }
+

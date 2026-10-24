@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.Controller.Controller;
@@ -17,14 +18,12 @@ public class HistoryWindow {
         Stage stage = new Stage();
         stage.setTitle("State History");
 
-        // Build an observable copy so the list view can refresh
         ObservableList<IMemento> items =
                 FXCollections.observableArrayList(controller.getHistory());
 
         ListView<IMemento> listView = new ListView<>(items);
-        listView.setPrefSize(520, 300);
+        listView.setPrefSize(560, 300);
 
-        // Custom cell so we control the text shown
         listView.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(IMemento item, boolean empty) {
@@ -33,17 +32,18 @@ public class HistoryWindow {
             }
         });
 
-        // Clicking an entry restores that state
-        listView.setOnMouseClicked(event -> {
-            int index = listView.getSelectionModel().getSelectedIndex();
+        // Fire only on real selection changes, not on stray clicks on empty area.
+        listView.getSelectionModel().selectedIndexProperty().addListener((obs, oldIdx, newIdx) -> {
+            int index = newIdx.intValue();
             if (index >= 0) {
                 controller.restoreFromHistory(index);
             }
         });
 
+        // Optional: still handle double-click explicitly? Not needed — selection listener suffices.
+
         VBox root = new VBox(listView);
         root.setPadding(new Insets(10));
-
         stage.setScene(new Scene(root));
         stage.show();
     }
