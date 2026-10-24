@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="OTP1_inclass1_assignment_AndreiTsizikov" />
+        <module name="Assignment_11_Memento" />
       </profile>
     </annotationProcessing>
   </component>
