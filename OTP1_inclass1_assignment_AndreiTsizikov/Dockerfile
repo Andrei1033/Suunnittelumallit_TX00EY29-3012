@@ -32,8 +32,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && fc-cache -f -v \
     && rm -rf /var/lib/apt/lists/*
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 # Копируем fat JAR и переименовываем в app.jar
 COPY --from=build /app/target/temperature_converter.jar app.jar
 
 # Запуск через виртуальный дисплей (Xvfb)
-CMD ["java", "-Dprism.order=sw", "-jar", "app.jar"]
+CMD ["java", "-Dfile.encoding=UTF-8", "-Dsun.jnu.encoding=UTF-8", "-Dprism.order=sw", "-jar", "app.jar"]
