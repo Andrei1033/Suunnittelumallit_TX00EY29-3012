@@ -1,42 +1,14 @@
-# ============================================================
-#  Этап 1: сборка fat JAR через Maven
-# ============================================================
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+
+FROM ubuntu:24.04
+
+RUN apt-get update && \
+    apt-get install -y openjdk-21-jdk openjfx fonts-noto-cjk fontconfig && \
+    fc-cache -f -v && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Сначала pom.xml — кэшируем зависимости
-COPY pom.xml .
-RUN mvn -B dependency:go-offline
+COPY target/classes /app
+COPY target/dependency /app/dependency
 
-# Затем исходники
-COPY src ./src
-RUN mvn -B clean package -DskipTests
-
-# ============================================================
-#  Этап 2: запуск
-# ============================================================
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-
-# JavaFX в headless-контейнере требует виртуальный дисплей и GTK
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        xvfb \
-        libgl1 \
-        libgtk-3-0 \
-        libxtst6 \
-        libxi6 \
-        libxrender1 \
-        libxext6 \
-        fonts-dejavu-core \
-        fonts-noto-cjk \
-    && fc-cache -f -v \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV LANG=C.UTF-8
-ENV LC_ALL=C.UTF-8
-
-# Копируем fat JAR и переименовываем в app.jar
-COPY --from=build /app/target/temperature_converter.jar app.jar
-
-# Запуск через виртуальный дисплей (Xvfb)
-CMD ["java", "-Dfile.encoding=UTF-8", "-Dsun.jnu.encoding=UTF-8", "-Dprism.order=sw", "-jar", "app.jar"]
+CMD ["java", "-Dprism.order=sw", "--module-path", "/usr/share/openjfx/lib", "--add-modules", "javafx.controls", "-cp", "/app:/app/dependency/*", "Main"]
