@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TemperatureApp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">temperature_converter</a> &gt; <a href="index.source.html" class="el_package">org.example.view</a> &gt; <span class="el_source">TemperatureApp.java</span></div><h1>TemperatureApp.java</h1><pre class="source lang-java linenums">package org.example.view;
 
-import controller.TemperatureController;
+import org.example.I18n.I18n;
+import org.example.controller.TemperatureController;
+
 import javafx.application.Application;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,100 +19,122 @@ import org.example.DBConnectors.TemperatureUnit;
 
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-<span class="nc" id="L22">public class TemperatureApp extends Application {</span>
+<span class="nc" id="L24">public class TemperatureApp extends Application {</span>
 
-<span class="nc" id="L24">    private final TemperatureController controller = new TemperatureController();</span>
+<span class="nc" id="L26">    private final TemperatureController controller = new TemperatureController();</span>
+    private Stage stage;
 
     @Override
     public void start(Stage stage) {
+<span class="nc" id="L31">        this.stage = stage;</span>
         try {
-<span class="nc" id="L29">            DBConnection.initialize();</span>
-<span class="nc" id="L30">        } catch (SQLException e) {</span>
-<span class="nc" id="L31">            showFatalError(&quot;Database initialization failed&quot;, e);</span>
-<span class="nc" id="L32">            return;</span>
-<span class="nc" id="L33">        }</span>
+<span class="nc" id="L33">            DBConnection.initialize();</span>
+<span class="nc" id="L34">        } catch (SQLException e) {</span>
+<span class="nc" id="L35">            showFatalError(&quot;error.db.init&quot;, e);</span>
+<span class="nc" id="L36">            return;</span>
+<span class="nc" id="L37">        }</span>
+<span class="nc" id="L38">        buildUi();</span>
+<span class="nc" id="L39">    }</span>
+
+    private void buildUi() {
+        // --- Language selector (order matters for bundle naming) ---
+<span class="nc" id="L43">        ComboBox&lt;Locale&gt; languageBox = new ComboBox&lt;&gt;();</span>
+<span class="nc" id="L44">        languageBox.getItems().addAll(</span>
+                Locale.US,
+                new Locale(&quot;fi&quot;, &quot;FI&quot;),
+                new Locale(&quot;sv&quot;, &quot;SE&quot;),
+                new Locale(&quot;ja&quot;, &quot;JP&quot;)
+        );
+<span class="nc" id="L50">        languageBox.setValue(I18n.getLocale());</span>
+<span class="nc" id="L51">        languageBox.setOnAction(e -&gt; {</span>
+<span class="nc" id="L52">            I18n.setLocale(languageBox.getValue());</span>
+<span class="nc" id="L53">            buildUi(); // rebuild UI with the new locale</span>
+<span class="nc" id="L54">        });</span>
 
         // --- Input controls ---
-<span class="nc" id="L36">        ComboBox&lt;TemperatureUnit&gt; fromBox = new ComboBox&lt;&gt;();</span>
-<span class="nc" id="L37">        ComboBox&lt;TemperatureUnit&gt; toBox = new ComboBox&lt;&gt;();</span>
-<span class="nc" id="L38">        TextField valueField = new TextField();</span>
-<span class="nc" id="L39">        valueField.setPromptText(&quot;Enter value&quot;);</span>
-<span class="nc" id="L40">        Button convertButton = new Button(&quot;Convert&quot;);</span>
+<span class="nc" id="L57">        ComboBox&lt;TemperatureUnit&gt; fromBox = new ComboBox&lt;&gt;();</span>
+<span class="nc" id="L58">        ComboBox&lt;TemperatureUnit&gt; toBox = new ComboBox&lt;&gt;();</span>
+<span class="nc" id="L59">        TextField valueField = new TextField();</span>
+<span class="nc" id="L60">        valueField.setPromptText(I18n.get(&quot;field.value.prompt&quot;));</span>
+<span class="nc" id="L61">        Button convertButton = new Button(I18n.get(&quot;button.convert&quot;));</span>
 
-<span class="nc" id="L42">        Label resultLabel = new Label(&quot;—&quot;);</span>
-<span class="nc" id="L43">        resultLabel.setStyle(&quot;-fx-font-size: 16px; -fx-font-weight: bold;&quot;);</span>
+<span class="nc" id="L63">        Label resultLabel = new Label(I18n.get(&quot;label.result.empty&quot;));</span>
+<span class="nc" id="L64">        resultLabel.setStyle(&quot;-fx-font-size: 16px; -fx-font-weight: bold;&quot;);</span>
 
-<span class="nc" id="L45">        Label extremeLabel = new Label(&quot;&quot;);</span>
-<span class="nc" id="L46">        extremeLabel.setStyle(&quot;-fx-text-fill: darkred;&quot;);</span>
+<span class="nc" id="L66">        Label extremeLabel = new Label(&quot;&quot;);</span>
+<span class="nc" id="L67">        extremeLabel.setStyle(&quot;-fx-text-fill: darkred;&quot;);</span>
 
         // --- Layout for input row ---
-<span class="nc" id="L49">        HBox inputRow = new HBox(10,</span>
-                new Label(&quot;From:&quot;), fromBox,
-                new Label(&quot;To:&quot;), toBox,
-                new Label(&quot;Value:&quot;), valueField,
+<span class="nc" id="L70">        HBox inputRow = new HBox(10,</span>
+<span class="nc" id="L71">                new Label(I18n.get(&quot;label.from&quot;)), fromBox,</span>
+<span class="nc" id="L72">                new Label(I18n.get(&quot;label.to&quot;)), toBox,</span>
+<span class="nc" id="L73">                new Label(I18n.get(&quot;label.value&quot;)), valueField,</span>
                 convertButton);
-<span class="nc" id="L54">        inputRow.setAlignment(Pos.CENTER_LEFT);</span>
-<span class="nc" id="L55">        inputRow.setPadding(new Insets(10));</span>
+<span class="nc" id="L75">        inputRow.setAlignment(Pos.CENTER_LEFT);</span>
+<span class="nc" id="L76">        inputRow.setPadding(new Insets(10));</span>
 
         // --- History table ---
-<span class="nc" id="L58">        TableView&lt;TempRecord&gt; table = new TableView&lt;&gt;();</span>
+<span class="nc" id="L79">        TableView&lt;TempRecord&gt; table = new TableView&lt;&gt;();</span>
 
-<span class="nc" id="L60">        TableColumn&lt;TempRecord, String&gt; timeCol = new TableColumn&lt;&gt;(&quot;Time&quot;);</span>
-<span class="nc" id="L61">        timeCol.setCellValueFactory(cell -&gt; {</span>
-<span class="nc" id="L62">            var ts = cell.getValue().getCreatedAt();</span>
-<span class="nc bnc" id="L63" title="All 2 branches missed.">            String formatted = ts == null ? &quot;&quot; :</span>
-<span class="nc" id="L64">                    ts.format(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;));</span>
-<span class="nc" id="L65">            return new javafx.beans.property.SimpleStringProperty(formatted);</span>
+<span class="nc" id="L81">        TableColumn&lt;TempRecord, String&gt; timeCol = new TableColumn&lt;&gt;(I18n.get(&quot;table.column.time&quot;));</span>
+<span class="nc" id="L82">        timeCol.setCellValueFactory(cell -&gt; {</span>
+<span class="nc" id="L83">            var ts = cell.getValue().getCreatedAt();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            String formatted = ts == null ? &quot;&quot; :</span>
+<span class="nc" id="L85">                    ts.format(DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;));</span>
+<span class="nc" id="L86">            return new javafx.beans.property.SimpleStringProperty(formatted);</span>
         });
 
-<span class="nc" id="L68">        TableColumn&lt;TempRecord, String&gt; fromCol = new TableColumn&lt;&gt;(&quot;From&quot;);</span>
-<span class="nc" id="L69">        fromCol.setCellValueFactory(cell -&gt;</span>
-<span class="nc" id="L70">                new javafx.beans.property.SimpleStringProperty(</span>
-<span class="nc" id="L71">                        cell.getValue().getSourceUnit().getName()));</span>
+<span class="nc" id="L89">        TableColumn&lt;TempRecord, String&gt; fromCol = new TableColumn&lt;&gt;(I18n.get(&quot;table.column.from&quot;));</span>
+<span class="nc" id="L90">        fromCol.setCellValueFactory(cell -&gt;</span>
+<span class="nc" id="L91">                new javafx.beans.property.SimpleStringProperty(</span>
+<span class="nc" id="L92">                        cell.getValue().getSourceUnit().getName()));</span>
 
-<span class="nc" id="L73">        TableColumn&lt;TempRecord, String&gt; toCol = new TableColumn&lt;&gt;(&quot;To&quot;);</span>
-<span class="nc" id="L74">        toCol.setCellValueFactory(cell -&gt;</span>
-<span class="nc" id="L75">                new javafx.beans.property.SimpleStringProperty(</span>
-<span class="nc" id="L76">                        cell.getValue().getTargetUnit().getName()));</span>
+<span class="nc" id="L94">        TableColumn&lt;TempRecord, String&gt; toCol = new TableColumn&lt;&gt;(I18n.get(&quot;table.column.to&quot;));</span>
+<span class="nc" id="L95">        toCol.setCellValueFactory(cell -&gt;</span>
+<span class="nc" id="L96">                new javafx.beans.property.SimpleStringProperty(</span>
+<span class="nc" id="L97">                        cell.getValue().getTargetUnit().getName()));</span>
 
-<span class="nc" id="L78">        TableColumn&lt;TempRecord, Number&gt; inputCol = new TableColumn&lt;&gt;(&quot;Input&quot;);</span>
-<span class="nc" id="L79">        inputCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;inputValue&quot;));</span>
+<span class="nc" id="L99">        TableColumn&lt;TempRecord, Number&gt; inputCol = new TableColumn&lt;&gt;(I18n.get(&quot;table.column.input&quot;));</span>
+<span class="nc" id="L100">        inputCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;inputValue&quot;));</span>
 
-<span class="nc" id="L81">        TableColumn&lt;TempRecord, Number&gt; outputCol = new TableColumn&lt;&gt;(&quot;Output&quot;);</span>
-<span class="nc" id="L82">        outputCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;outputValue&quot;));</span>
+<span class="nc" id="L102">        TableColumn&lt;TempRecord, Number&gt; outputCol = new TableColumn&lt;&gt;(I18n.get(&quot;table.column.output&quot;));</span>
+<span class="nc" id="L103">        outputCol.setCellValueFactory(new PropertyValueFactory&lt;&gt;(&quot;outputValue&quot;));</span>
 
-<span class="nc" id="L84">        table.getColumns().addAll(timeCol, fromCol, toCol, inputCol, outputCol);</span>
-<span class="nc" id="L85">        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</span>
-<span class="nc" id="L86">        table.setPrefHeight(300);</span>
+<span class="nc" id="L105">        table.getColumns().addAll(timeCol, fromCol, toCol, inputCol, outputCol);</span>
+<span class="nc" id="L106">        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</span>
+<span class="nc" id="L107">        table.setPrefHeight(300);</span>
 
-        // --- Root layout ---
-<span class="nc" id="L89">        VBox root = new VBox(10,</span>
+<span class="nc" id="L109">        HBox topRow = new HBox(10, new Label(&quot;🌐&quot;), languageBox);</span>
+<span class="nc" id="L110">        topRow.setAlignment(Pos.CENTER_RIGHT);</span>
+
+<span class="nc" id="L112">        VBox root = new VBox(10,</span>
+                topRow,
                 inputRow,
                 resultLabel,
                 extremeLabel,
-                new Label(&quot;History:&quot;),
+<span class="nc" id="L117">                new Label(I18n.get(&quot;label.history&quot;)),</span>
                 table);
-<span class="nc" id="L95">        root.setPadding(new Insets(15));</span>
+<span class="nc" id="L119">        root.setPadding(new Insets(15));</span>
 
-        // --- Controller wiring ---
-<span class="nc" id="L98">        controller.init(fromBox, toBox, valueField, resultLabel, extremeLabel, table);</span>
+<span class="nc" id="L121">        controller.init(fromBox, toBox, valueField, resultLabel, extremeLabel, table);</span>
 
-<span class="nc" id="L100">        convertButton.setOnAction(e -&gt; controller.onConvert());</span>
-<span class="nc" id="L101">        valueField.setOnAction(e -&gt; controller.onConvert());</span>
+<span class="nc" id="L123">        convertButton.setOnAction(e -&gt; controller.onConvert());</span>
+<span class="nc" id="L124">        valueField.setOnAction(e -&gt; controller.onConvert());</span>
 
-        // --- Stage ---
-<span class="nc" id="L104">        stage.setTitle(&quot;Temperature Converter&quot;);</span>
-<span class="nc" id="L105">        stage.setScene(new Scene(root, 700, 500));</span>
-<span class="nc" id="L106">        stage.show();</span>
-<span class="nc" id="L107">    }</span>
+<span class="nc" id="L126">        stage.setTitle(I18n.get(&quot;app.title&quot;));</span>
+<span class="nc" id="L127">        stage.setScene(new Scene(root, 700, 520));</span>
+<span class="nc" id="L128">        stage.show();</span>
+<span class="nc" id="L129">    }</span>
+
 
     private void showFatalError(String message, Exception e) {
-<span class="nc" id="L110">        Alert alert = new Alert(Alert.AlertType.ERROR);</span>
-<span class="nc" id="L111">        alert.setTitle(&quot;Error&quot;);</span>
-<span class="nc" id="L112">        alert.setHeaderText(message);</span>
-<span class="nc" id="L113">        alert.setContentText(e.getMessage());</span>
-<span class="nc" id="L114">        alert.showAndWait();</span>
-<span class="nc" id="L115">    }</span>
+<span class="nc" id="L133">        Alert alert = new Alert(Alert.AlertType.ERROR);</span>
+<span class="nc" id="L134">        alert.setTitle(I18n.get(&quot;error.title&quot;));</span>
+<span class="nc" id="L135">        alert.setHeaderText(message);</span>
+<span class="nc" id="L136">        alert.setContentText(e.getMessage());</span>
+<span class="nc" id="L137">        alert.showAndWait();</span>
+<span class="nc" id="L138">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

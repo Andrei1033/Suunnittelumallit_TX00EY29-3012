@@ -18,7 +18,8 @@ RUN mvn -B clean package -DskipTests
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# JavaFX в headless-контейнере требует виртуальный дисплей и GTK
+# JavaFX в headless-контейнере требует виртуальный дисплей и GTK.
+# Для японских символов обязательно нужны шрифты CJK и fontconfig.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         xvfb \
         libgl1 \
@@ -27,13 +28,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxi6 \
         libxrender1 \
         libxext6 \
+        fontconfig \
         fonts-dejavu-core \
         fonts-noto-cjk \
+        fonts-noto-cjk-extra \
     && fc-cache -f -v \
     && rm -rf /var/lib/apt/lists/*
 
-ENV LANG=C.UTF-8
-ENV LC_ALL=C.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8"
 
 # Копируем fat JAR и переименовываем в app.jar
 COPY --from=build /app/target/temperature_converter.jar app.jar
