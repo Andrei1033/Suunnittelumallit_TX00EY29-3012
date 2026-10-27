@@ -8,6 +8,9 @@ public class TemperatureConverter {
     public static final String FAHRENHEIT = "Fahrenheit";
     public static final String KELVIN = "Kelvin";
 
+    private static final double ABSOLUTE_ZERO_CELSIUS = -273.15;
+    private static final double EPSILON = 1e-9;
+
     private TemperatureConverter() {
     }
 
@@ -59,5 +62,12 @@ public class TemperatureConverter {
      */
     public static boolean isExtreme(double value, String unitName) {
         return isExtremeTemperature(toCelsius(value, unitName));
+    }
+
+    /**
+     * True if the value is physically impossible (below absolute zero).
+     */
+    public static boolean isBelowAbsoluteZero(double value, String unitName) {
+        return toCelsius(value, unitName) < ABSOLUTE_ZERO_CELSIUS - EPSILON;
     }
 }
