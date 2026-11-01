@@ -138,6 +138,7 @@ public class TemperatureApp extends Application {
                 extremeLabel,
                 new Label(I18n.get("label.history")),
                 table);
+        root.setNodeOrientation(FontSupport.nodeOrientation(I18n.getLocale()));
         root.setPadding(new Insets(15));
         root.setStyle(FontSupport.styleFor(locale));
 
@@ -153,6 +154,7 @@ public class TemperatureApp extends Application {
 
     private void showFatalError(String messageKey, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.getDialogPane().setNodeOrientation(FontSupport.nodeOrientation(I18n.getLocale()));
         alert.getDialogPane().setStyle(FontSupport.styleFor(I18n.getLocale()));
         alert.setTitle(I18n.get("error.title"));
         alert.setHeaderText(I18n.get(messageKey));

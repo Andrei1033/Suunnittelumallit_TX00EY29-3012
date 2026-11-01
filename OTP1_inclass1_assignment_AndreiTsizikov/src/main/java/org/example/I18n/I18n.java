@@ -24,7 +24,8 @@ public final class I18n {
             DEFAULT_LOCALE,
             Locale.of("fi", "FI"),
             Locale.of("sv", "SE"),
-            Locale.of("ja", "JP")
+            Locale.of("ja", "JP"),
+            Locale.of("ar", "AR")
     );
 
     private static final ResourceBundle FALLBACK = load(DEFAULT_LOCALE);

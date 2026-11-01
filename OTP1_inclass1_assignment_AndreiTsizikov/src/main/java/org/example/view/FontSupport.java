@@ -1,6 +1,8 @@
 package org.example.view;
 
+import javafx.geometry.NodeOrientation;
 import javafx.scene.text.Font;
+import org.example.I18n.I18n;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,5 +48,18 @@ public final class FontSupport {
             return "-fx-font-family: '" + japaneseFamily + "';";
         }
         return "";
+    }
+
+    /** Right-to-left scripts need this flag; Layout mirrors itself. */
+    public static boolean isRtl() {
+        return isRtl(I18n.getLocale());
+    }
+
+    public static boolean isRtl(Locale locale) {
+        return locale != null && "ar".equals(locale.getLanguage());
+    }
+
+    public static NodeOrientation nodeOrientation(Locale locale) {
+        return isRtl(locale) ? NodeOrientation.RIGHT_TO_LEFT : NodeOrientation.LEFT_TO_RIGHT;
     }
 }
