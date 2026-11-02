@@ -1,0 +1,7 @@
+package Assignment_13_Visitor.modelllllllllllllllllllllllllll;
+
+import Assignment_13_Visitor.visitorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr.FileSystemVisitor;
+
+public interface FileSystemElement {
+    void accept(FileSystemVisitor visitor);
+}
