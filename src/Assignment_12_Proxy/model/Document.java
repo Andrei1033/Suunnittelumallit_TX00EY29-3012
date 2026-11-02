@@ -1,6 +1,6 @@
 package Assignment_12_Proxy.model;
 
-import Assignment_12_Proxy.proxy.DocumentInterface;
+import Assignment_12_Proxy.proxyyyyyyy.DocumentInterface;
 
 import java.time.LocalDate;
 

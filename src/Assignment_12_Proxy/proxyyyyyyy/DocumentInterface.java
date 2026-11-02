@@ -1,4 +1,4 @@
-package Assignment_12_Proxy.proxy;
+package Assignment_12_Proxy.proxyyyyyyy;
 
 import Assignment_12_Proxy.model.User;
 

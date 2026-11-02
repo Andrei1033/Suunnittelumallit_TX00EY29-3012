@@ -1,8 +1,8 @@
 package Assignment_12_Proxy.library;
 
 import Assignment_12_Proxy.model.Document;
-import Assignment_12_Proxy.proxy.DocumentInterface;
-import Assignment_12_Proxy.proxy.DocumentProxy;
+import Assignment_12_Proxy.proxyyyyyyy.DocumentInterface;
+import Assignment_12_Proxy.proxyyyyyyy.DocumentProxy;
 import Assignment_12_Proxy.service.AccessControlService;
 
 import java.time.LocalDate;

@@ -3,7 +3,7 @@ package Assignment_12_Proxy;
 import Assignment_12_Proxy.library.Library;
 import Assignment_12_Proxy.model.AccessDeniedException;
 import Assignment_12_Proxy.model.User;
-import Assignment_12_Proxy.proxy.DocumentInterface;
+import Assignment_12_Proxy.proxyyyyyyy.DocumentInterface;
 
 import java.time.LocalDate;
 
