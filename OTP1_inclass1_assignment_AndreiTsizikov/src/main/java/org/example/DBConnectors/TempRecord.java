@@ -10,6 +10,7 @@ public class TempRecord {
     private double inputValue;
     private double outputValue;
     private LocalDateTime createdAt;
+    private String language = "en";
 
     public TempRecord() {
     }
@@ -77,6 +78,9 @@ public class TempRecord {
     public void setOutputValue(double outputValue) {
         this.outputValue = outputValue;
     }
+
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

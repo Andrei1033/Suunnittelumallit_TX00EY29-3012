@@ -108,11 +108,11 @@ public class TemperatureApp extends Application {
 
         TableColumn<TempRecord, String> fromCol = new TableColumn<>(I18n.get("table.column.from"));
         fromCol.setCellValueFactory(cell ->
-                new SimpleStringProperty(I18n.unitName(cell.getValue().getSourceUnit().getName())));
+                new SimpleStringProperty(cell.getValue().getSourceUnit().getLocalizedName()));
 
         TableColumn<TempRecord, String> toCol = new TableColumn<>(I18n.get("table.column.to"));
         toCol.setCellValueFactory(cell ->
-                new SimpleStringProperty(I18n.unitName(cell.getValue().getTargetUnit().getName())));
+                new SimpleStringProperty(cell.getValue().getTargetUnit().getLocalizedName()));
 
         TableColumn<TempRecord, String> inputCol = new TableColumn<>(I18n.get("table.column.input"));
         inputCol.setCellValueFactory(cell ->

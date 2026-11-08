@@ -14,6 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.util.StringConverter;
 
 import java.sql.SQLException;
@@ -71,7 +72,7 @@ public class TemperatureController {
         StringConverter<TemperatureUnit> unitConverter = new StringConverter<>() {
             @Override
             public String toString(TemperatureUnit u) {
-                return u == null ? "" : I18n.unitName(u.getName()) + " (" + u.getSymbol() + ")";
+                return u == null ? "" : u.getLocalizedName() + " (" + u.getSymbol() + ")";
             }
 
             @Override
@@ -81,6 +82,14 @@ public class TemperatureController {
         };
         fromBox.setConverter(unitConverter);
         toBox.setConverter(unitConverter);
+        Tooltip fromDescription = new Tooltip();
+        Tooltip toDescription = new Tooltip();
+        fromBox.setTooltip(fromDescription);
+        toBox.setTooltip(toDescription);
+        fromBox.valueProperty().addListener((obs, oldValue, newValue) ->
+                fromDescription.setText(newValue == null ? "" : newValue.getDescription()));
+        toBox.valueProperty().addListener((obs, oldValue, newValue) ->
+                toDescription.setText(newValue == null ? "" : newValue.getDescription()));
 
         loadUnits();
         if (savedValueText != null) {
@@ -92,7 +101,7 @@ public class TemperatureController {
 
     private void loadUnits() {
         try {
-            List<TemperatureUnit> units = unitDAO.findAll();
+            List<TemperatureUnit> units = unitDAO.findAll(I18n.getLocale().getLanguage());
             fromBox.setItems(FXCollections.observableArrayList(units));
             toBox.setItems(FXCollections.observableArrayList(units));
 
@@ -116,7 +125,7 @@ public class TemperatureController {
 
     private void loadHistory() {
         try {
-            List<TempRecord> records = recordDAO.findAll();
+            List<TempRecord> records = recordDAO.findAll(I18n.getLocale().getLanguage());
             table.setItems(FXCollections.observableArrayList(records));
         } catch (SQLException e) {
             showError(I18n.get("error.load.history"), e);
@@ -178,6 +187,7 @@ public class TemperatureController {
 
         try {
             TempRecord record = new TempRecord(from, to, input, output);
+            record.setLanguage(I18n.getLocale().getLanguage());
             recordDAO.save(record);
             loadHistory();
         } catch (SQLException e) {
