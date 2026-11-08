@@ -9,7 +9,7 @@ public class DBConnection {
 
     private static final String PROPERTIES_FILE = "database.properties";
 
-    private static final String DEFAULT_URL = "jdbc:h2:./data/temperature_db;AUTO_SERVER=TRUE";
+    private static final String DEFAULT_URL = "jdbc:h2:./OTP1_inclass1_assignment_AndreiTsizikov/data/temperature_db;AUTO_SERVER=TRUE";
     private static final String DEFAULT_USER = "sa";
     private static final String DEFAULT_PASSWORD = "";
 
