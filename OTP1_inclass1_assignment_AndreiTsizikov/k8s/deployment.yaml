@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temperature-converter
+  labels:
+    app: temperature-converter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temperature-converter
+  template:
+    metadata:
+      labels:
+        app: temperature-converter
+    spec:
+      containers:
+        - name: temperature-converter
+          # Replace this with the image you pushed to Docker Hub.
+          image: andrei1033/temperature-converter:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            # H2 is embedded in the application container; no DB pod/service is needed.
+            # The PVC keeps the database file when the pod is recreated.
+            - name: DB_URL
+              value: "jdbc:h2:file:/data/temperature_db"
+            - name: DB_USER
+              value: "sa"
+            - name: DB_PASSWORD
+              value: ""
+            # The JavaFX window is displayed by an X server running on the host.
+            # Configure Xming/VcXsrv to accept connections from Minikube.
+            - name: DISPLAY
+              value: "host.minikube.internal:0.0"
+            - name: LANG
+              value: "C.UTF-8"
+            - name: LC_ALL
+              value: "C.UTF-8"
+          volumeMounts:
+            - name: database-storage
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+      volumes:
+        - name: database-storage
+          persistentVolumeClaim:
+            claimName: temperature-converter-data
