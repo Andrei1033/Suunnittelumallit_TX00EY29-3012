@@ -8,6 +8,9 @@ public class TemperatureConverter {
     public static final String FAHRENHEIT = &quot;Fahrenheit&quot;;
     public static final String KELVIN = &quot;Kelvin&quot;;
 
+    private static final double ABSOLUTE_ZERO_CELSIUS = -273.15;
+    private static final double EPSILON = 1e-9;
+
     private TemperatureConverter() {
     }
 
@@ -15,23 +18,23 @@ public class TemperatureConverter {
      * Muuntaa annetun arvon lähtöyksiköstä kohdeyksikköön.
      */
     public static double convert(double value, TemperatureUnit from, TemperatureUnit to) {
-<span class="fc bfc" id="L18" title="All 4 branches covered.">        if (from == null || to == null) {</span>
-<span class="fc" id="L19">            throw new IllegalArgumentException(&quot;Units must not be null&quot;);</span>
+<span class="fc bfc" id="L21" title="All 4 branches covered.">        if (from == null || to == null) {</span>
+<span class="fc" id="L22">            throw new IllegalArgumentException(&quot;Units must not be null&quot;);</span>
         }
 
-<span class="fc" id="L22">        double celsius = toCelsius(value, from.getName());</span>
-<span class="fc" id="L23">        return fromCelsius(celsius, to.getName());</span>
+<span class="fc" id="L25">        double celsius = toCelsius(value, from.getName());</span>
+<span class="fc" id="L26">        return fromCelsius(celsius, to.getName());</span>
     }
 
     /**
      * Muuntaa minkä tahansa yksikön arvon Celsiukseksi.
      */
     public static double toCelsius(double value, String unitName) {
-<span class="fc bfc" id="L30" title="All 4 branches covered.">        return switch (unitName) {</span>
-<span class="fc" id="L31">            case CELSIUS -&gt; value;</span>
-<span class="fc" id="L32">            case FAHRENHEIT -&gt; (value - 32) * 5 / 9;</span>
-<span class="fc" id="L33">            case KELVIN -&gt; value - 273.15;</span>
-<span class="fc" id="L34">            default -&gt; throw new IllegalArgumentException(&quot;Unknown unit: &quot; + unitName);</span>
+<span class="fc bfc" id="L33" title="All 4 branches covered.">        return switch (unitName) {</span>
+<span class="fc" id="L34">            case CELSIUS -&gt; value;</span>
+<span class="fc" id="L35">            case FAHRENHEIT -&gt; (value - 32) * 5 / 9;</span>
+<span class="fc" id="L36">            case KELVIN -&gt; value - 273.15;</span>
+<span class="fc" id="L37">            default -&gt; throw new IllegalArgumentException(&quot;Unknown unit: &quot; + unitName);</span>
         };
     }
 
@@ -39,11 +42,11 @@ public class TemperatureConverter {
      * Muuntaa Celsiuksen minkä tahansa yksikön arvoksi.
      */
     public static double fromCelsius(double celsius, String unitName) {
-<span class="fc bfc" id="L42" title="All 4 branches covered.">        return switch (unitName) {</span>
-<span class="fc" id="L43">            case CELSIUS -&gt; celsius;</span>
-<span class="fc" id="L44">            case FAHRENHEIT -&gt; (celsius * 9 / 5) + 32;</span>
-<span class="fc" id="L45">            case KELVIN -&gt; celsius + 273.15;</span>
-<span class="fc" id="L46">            default -&gt; throw new IllegalArgumentException(&quot;Unknown unit: &quot; + unitName);</span>
+<span class="fc bfc" id="L45" title="All 4 branches covered.">        return switch (unitName) {</span>
+<span class="fc" id="L46">            case CELSIUS -&gt; celsius;</span>
+<span class="fc" id="L47">            case FAHRENHEIT -&gt; (celsius * 9 / 5) + 32;</span>
+<span class="fc" id="L48">            case KELVIN -&gt; celsius + 273.15;</span>
+<span class="fc" id="L49">            default -&gt; throw new IllegalArgumentException(&quot;Unknown unit: &quot; + unitName);</span>
         };
     }
 
@@ -51,14 +54,21 @@ public class TemperatureConverter {
      * Ääriarvotarkistus perustuu aina Celsiukseen.
      */
     public static boolean isExtremeTemperature(double celsius) {
-<span class="fc bfc" id="L54" title="All 4 branches covered.">        return celsius &lt; -40 || celsius &gt; 50;</span>
+<span class="fc bfc" id="L57" title="All 4 branches covered.">        return celsius &lt; -40 || celsius &gt; 50;</span>
     }
 
     /**
      * Apumetodi UI:lle: tarkistaa ääriarvon suoraan yksikön perusteella.
      */
     public static boolean isExtreme(double value, String unitName) {
-<span class="fc" id="L61">        return isExtremeTemperature(toCelsius(value, unitName));</span>
+<span class="fc" id="L64">        return isExtremeTemperature(toCelsius(value, unitName));</span>
+    }
+
+    /**
+     * True if the value is physically impossible (below absolute zero).
+     */
+    public static boolean isBelowAbsoluteZero(double value, String unitName) {
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        return toCelsius(value, unitName) &lt; ABSOLUTE_ZERO_CELSIUS - EPSILON;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

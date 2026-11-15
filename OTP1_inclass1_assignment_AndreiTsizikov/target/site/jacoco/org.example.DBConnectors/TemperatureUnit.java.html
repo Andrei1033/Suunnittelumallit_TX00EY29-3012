@@ -3,65 +3,42 @@
 import java.util.Objects;
 
 public class TemperatureUnit {
-
     private int id;
+    // Stable, language-independent value used by conversion logic (e.g. Celsius).
     private String name;
     private String symbol;
+    private String localizedName;
+    private String description;
 
-<span class="nc" id="L11">    public TemperatureUnit() {</span>
-<span class="nc" id="L12">    }</span>
-
+<span class="nc" id="L13">    public TemperatureUnit() {}</span>
 <span class="fc" id="L14">    public TemperatureUnit(int id, String name, String symbol) {</span>
-<span class="fc" id="L15">        this.id = id;</span>
-<span class="fc" id="L16">        this.name = name;</span>
-<span class="fc" id="L17">        this.symbol = symbol;</span>
-<span class="fc" id="L18">    }</span>
-
-<span class="nc" id="L20">    public TemperatureUnit(String name, String symbol) {</span>
-<span class="nc" id="L21">        this.name = name;</span>
-<span class="nc" id="L22">        this.symbol = symbol;</span>
-<span class="nc" id="L23">    }</span>
-
-    public int getId() {
-<span class="nc" id="L26">        return id;</span>
+<span class="fc" id="L15">        this.id = id; this.name = name; this.symbol = symbol;</span>
+<span class="fc" id="L16">        this.localizedName = name;</span>
+<span class="fc" id="L17">    }</span>
+    public TemperatureUnit(int id, String name, String symbol, String localizedName, String description) {
+<span class="nc" id="L19">        this(id, name, symbol);</span>
+<span class="nc" id="L20">        this.localizedName = localizedName;</span>
+<span class="nc" id="L21">        this.description = description;</span>
+<span class="nc" id="L22">    }</span>
+    public TemperatureUnit(String name, String symbol) {
+<span class="nc" id="L24">        this(0, name, symbol);</span>
+<span class="nc" id="L25">    }</span>
+<span class="nc" id="L26">    public int getId() { return id; }</span>
+<span class="nc" id="L27">    public void setId(int id) { this.id = id; }</span>
+<span class="fc" id="L28">    public String getName() { return name; }</span>
+<span class="nc" id="L29">    public void setName(String name) { this.name = name; }</span>
+<span class="nc" id="L30">    public String getSymbol() { return symbol; }</span>
+<span class="nc" id="L31">    public void setSymbol(String symbol) { this.symbol = symbol; }</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">    public String getLocalizedName() { return localizedName == null ? name : localizedName; }</span>
+<span class="nc" id="L33">    public void setLocalizedName(String localizedName) { this.localizedName = localizedName; }</span>
+<span class="nc" id="L34">    public String getDescription() { return description; }</span>
+<span class="nc" id="L35">    public void setDescription(String description) { this.description = description; }</span>
+<span class="nc" id="L36">    @Override public String toString() { return getLocalizedName() + &quot; (&quot; + symbol + &quot;)&quot;; }</span>
+    @Override public boolean equals(Object o) {
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (!(o instanceof TemperatureUnit that)) return false;</span>
+<span class="nc" id="L40">        return Objects.equals(name, that.name);</span>
     }
-
-    public void setId(int id) {
-<span class="nc" id="L30">        this.id = id;</span>
-<span class="nc" id="L31">    }</span>
-
-    public String getName() {
-<span class="fc" id="L34">        return name;</span>
-    }
-
-    public void setName(String name) {
-<span class="nc" id="L38">        this.name = name;</span>
-<span class="nc" id="L39">    }</span>
-
-    public String getSymbol() {
-<span class="nc" id="L42">        return symbol;</span>
-    }
-
-    public void setSymbol(String symbol) {
-<span class="nc" id="L46">        this.symbol = symbol;</span>
-<span class="nc" id="L47">    }</span>
-
-    @Override
-    public String toString() {
-<span class="nc" id="L51">        return name + &quot; (&quot; + symbol + &quot;)&quot;;</span>
-    }
-
-    @Override
-    public boolean equals(Object o) {
-<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (this == o) return true;</span>
-<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (!(o instanceof TemperatureUnit)) return false;</span>
-<span class="nc" id="L58">        TemperatureUnit that = (TemperatureUnit) o;</span>
-<span class="nc" id="L59">        return Objects.equals(name, that.name);</span>
-    }
-
-    @Override
-    public int hashCode() {
-<span class="nc" id="L64">        return Objects.hash(name);</span>
-    }
+<span class="nc" id="L42">    @Override public int hashCode() { return Objects.hash(name); }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

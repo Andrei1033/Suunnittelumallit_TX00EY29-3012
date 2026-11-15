@@ -9,7 +9,7 @@ public class DBConnection {
 
     private static final String PROPERTIES_FILE = &quot;database.properties&quot;;
 
-    private static final String DEFAULT_URL = &quot;jdbc:h2:./data/temperature_db;AUTO_SERVER=TRUE&quot;;
+    private static final String DEFAULT_URL = &quot;jdbc:h2:./OTP1_inclass1_assignment_AndreiTsizikov/data/temperature_db;AUTO_SERVER=TRUE&quot;;
     private static final String DEFAULT_USER = &quot;sa&quot;;
     private static final String DEFAULT_PASSWORD = &quot;&quot;;
 
@@ -79,18 +79,27 @@ public class DBConnection {
     }
 
     public static void initialize() throws SQLException {
-<span class="nc" id="L82">        try (Connection conn = getConnection();</span>
-<span class="nc" id="L83">             Statement stmt = conn.createStatement()) {</span>
-
-<span class="nc" id="L85">            stmt.execute(&quot;&quot;&quot;</span>
+<span class="nc" id="L82">        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {</span>
+<span class="nc" id="L83">            stmt.execute(&quot;&quot;&quot;</span>
                 CREATE TABLE IF NOT EXISTS temperature_unit (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     name VARCHAR(50) NOT NULL UNIQUE,
-                    symbol VARCHAR(10) NOT NULL
+                    symbol VARCHAR(10) NOT NULL,
+                    category VARCHAR(30) NOT NULL DEFAULT 'temperature'
                 )
                 &quot;&quot;&quot;);
-
-<span class="nc" id="L93">            stmt.execute(&quot;&quot;&quot;</span>
+<span class="nc" id="L91">            stmt.execute(&quot;&quot;&quot;</span>
+                CREATE TABLE IF NOT EXISTS unit_translation (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    unit_id INT NOT NULL,
+                    lang VARCHAR(5) NOT NULL,
+                    name VARCHAR(100) NOT NULL,
+                    description VARCHAR(255) NOT NULL,
+                    CONSTRAINT fk_unit_translation_unit FOREIGN KEY (unit_id) REFERENCES temperature_unit(id),
+                    CONSTRAINT uq_unit_translation UNIQUE (unit_id, lang)
+                )
+                &quot;&quot;&quot;);
+<span class="nc" id="L102">            stmt.execute(&quot;&quot;&quot;</span>
                 CREATE TABLE IF NOT EXISTS conversion_record (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     source_unit_id INT NOT NULL,
@@ -102,43 +111,75 @@ public class DBConnection {
                     FOREIGN KEY (target_unit_id) REFERENCES temperature_unit(id)
                 )
                 &quot;&quot;&quot;);
+<span class="nc" id="L114">            stmt.execute(&quot;ALTER TABLE temperature_unit ADD COLUMN IF NOT EXISTS category VARCHAR(30) DEFAULT 'temperature' NOT NULL&quot;);</span>
+<span class="nc" id="L115">            stmt.execute(&quot;ALTER TABLE conversion_record ADD COLUMN IF NOT EXISTS language VARCHAR(5) DEFAULT 'en'&quot;);</span>
         }
+<span class="nc" id="L117">        seedUnitsAndTranslations();</span>
+<span class="nc" id="L118">    }</span>
 
-<span class="nc" id="L107">        seedUnits();</span>
-<span class="nc" id="L108">    }</span>
-
-    private static void seedUnits() throws SQLException {
-<span class="nc" id="L111">        insertUnitIfMissing(&quot;Celsius&quot;, &quot;°C&quot;);</span>
-<span class="nc" id="L112">        insertUnitIfMissing(&quot;Fahrenheit&quot;, &quot;°F&quot;);</span>
-<span class="nc" id="L113">        insertUnitIfMissing(&quot;Kelvin&quot;, &quot;K&quot;);</span>
-<span class="nc" id="L114">    }</span>
-
-    private static void insertUnitIfMissing(String name, String symbol) throws SQLException {
-<span class="nc" id="L117">        String checkSql = &quot;SELECT COUNT(*) FROM temperature_unit WHERE name = ?&quot;;</span>
-<span class="nc" id="L118">        String insertSql = &quot;INSERT INTO temperature_unit (name, symbol) VALUES (?, ?)&quot;;</span>
-
-<span class="nc" id="L120">        try (Connection conn = getConnection();</span>
-<span class="nc" id="L121">             PreparedStatement check = conn.prepareStatement(checkSql);</span>
-<span class="nc" id="L122">             PreparedStatement insert = conn.prepareStatement(insertSql)) {</span>
-
-<span class="nc" id="L124">            check.setString(1, name);</span>
-
-<span class="nc" id="L126">            try (ResultSet rs = check.executeQuery()) {</span>
-<span class="nc bnc" id="L127" title="All 4 branches missed.">                if (rs.next() &amp;&amp; rs.getInt(1) == 0) {</span>
-<span class="nc" id="L128">                    insert.setString(1, name);</span>
-<span class="nc" id="L129">                    insert.setString(2, symbol);</span>
-<span class="nc" id="L130">                    insert.executeUpdate();</span>
+    private static void seedUnitsAndTranslations() throws SQLException {
+<span class="nc" id="L121">        String[][] units = {</span>
+                {&quot;Celsius&quot;, &quot;°C&quot;, &quot;temperature&quot;}, {&quot;Fahrenheit&quot;, &quot;°F&quot;, &quot;temperature&quot;}, {&quot;Kelvin&quot;, &quot;K&quot;, &quot;temperature&quot;}
+        };
+<span class="nc" id="L124">        String[][][] translations = {</span>
+                {
+                        {&quot;en&quot;, &quot;Celsius&quot;, &quot;Temperature in degrees Celsius&quot;},
+                        {&quot;fi&quot;, &quot;Celsius&quot;, &quot;Lämpötila celsiusasteina&quot;},
+                        {&quot;sv&quot;, &quot;Celsius&quot;, &quot;Temperatur i grader Celsius&quot;},
+                        {&quot;ja&quot;, &quot;摂氏&quot;, &quot;セルシウス度で表した温度&quot;},
+                        {&quot;ar&quot;, &quot;سلسيوس&quot;, &quot;درجة الحرارة بالسلسيوس&quot;}
+                },
+                {
+                        {&quot;en&quot;, &quot;Fahrenheit&quot;, &quot;Temperature in degrees Fahrenheit&quot;},
+                        {&quot;fi&quot;, &quot;Fahrenheit&quot;, &quot;Lämpötila fahrenheitasteina&quot;},
+                        {&quot;sv&quot;, &quot;Fahrenheit&quot;, &quot;Temperatur i grader Fahrenheit&quot;},
+                        {&quot;ja&quot;, &quot;華氏&quot;, &quot;華氏度で表した温度&quot;},
+                        {&quot;ar&quot;, &quot;فهرنهايت&quot;, &quot;درجة الحرارة بالفهرنهايت&quot;}
+                },
+                {
+                        {&quot;en&quot;, &quot;Kelvin&quot;, &quot;Temperature in kelvin&quot;}, {&quot;fi&quot;, &quot;Kelvin&quot;, &quot;Lämpötila kelvineinä&quot;},
+                        {&quot;sv&quot;, &quot;Kelvin&quot;, &quot;Temperatur i kelvin&quot;}, {&quot;ja&quot;, &quot;ケルビン&quot;, &quot;ケルビンで表した温度&quot;},
+                        {&quot;ar&quot;, &quot;كلفن&quot;, &quot;درجة الحرارة بالكلفن&quot;}
                 }
-            }
+        };
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        for (int i = 0; i &lt; units.length; i++) {</span>
+<span class="nc" id="L146">            int unitId = ensureUnit(units[i][0], units[i][1], units[i][2]);</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">            for (String[] tr : translations[i]) ensureTranslation(unitId, tr[0], tr[1], tr[2]);</span>
         }
-<span class="nc" id="L134">    }</span>
+<span class="nc" id="L149">    }</span>
+
+    private static int ensureUnit(String name, String symbol, String category) throws SQLException {
+<span class="nc" id="L152">        try (Connection c = getConnection()) {</span>
+<span class="nc" id="L153">            try (PreparedStatement q = c.prepareStatement(&quot;SELECT id FROM temperature_unit WHERE name = ?&quot;)) {</span>
+<span class="nc" id="L154">                q.setString(1, name);</span>
+<span class="nc bnc" id="L155" title="All 4 branches missed.">                try (ResultSet rs = q.executeQuery()) { if (rs.next()) return rs.getInt(1); }</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            }</span>
+<span class="nc" id="L157">            try (PreparedStatement ins = c.prepareStatement(&quot;INSERT INTO temperature_unit(name, symbol, category) VALUES (?, ?, ?)&quot;, Statement.RETURN_GENERATED_KEYS)) {</span>
+<span class="nc" id="L158">                ins.setString(1, name); ins.setString(2, symbol); ins.setString(3, category); ins.executeUpdate();</span>
+<span class="nc bnc" id="L159" title="All 4 branches missed.">                try (ResultSet keys = ins.getGeneratedKeys()) { if (keys.next()) return keys.getInt(1); }</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            }</span>
+<span class="nc bnc" id="L161" title="All 4 branches missed.">        }</span>
+<span class="nc" id="L162">        throw new SQLException(&quot;Could not create unit &quot; + name);</span>
+    }
+
+    private static void ensureTranslation(int unitId, String lang, String name, String description) throws SQLException {
+<span class="nc" id="L166">        try (Connection c = getConnection();</span>
+<span class="nc" id="L167">             PreparedStatement q = c.prepareStatement(&quot;SELECT id FROM unit_translation WHERE unit_id = ? AND lang = ?&quot;)) {</span>
+<span class="nc" id="L168">            q.setInt(1, unitId); q.setString(2, lang);</span>
+<span class="nc bnc" id="L169" title="All 4 branches missed.">            try (ResultSet rs = q.executeQuery()) { if (rs.next()) return; }</span>
+<span class="nc" id="L170">            try (PreparedStatement ins = c.prepareStatement(&quot;INSERT INTO unit_translation(unit_id, lang, name, description) VALUES (?, ?, ?, ?)&quot;)) {</span>
+<span class="nc" id="L171">                ins.setInt(1, unitId); ins.setString(2, lang); ins.setString(3, name); ins.setString(4, description); ins.executeUpdate();</span>
+            }
+<span class="nc bnc" id="L173" title="All 4 branches missed.">        }</span>
+<span class="nc" id="L174">    }</span>
 
     public static void clearAll() throws SQLException {
-<span class="nc" id="L137">        try (Connection conn = getConnection();</span>
-<span class="nc" id="L138">             Statement stmt = conn.createStatement()) {</span>
-<span class="nc" id="L139">            stmt.execute(&quot;DELETE FROM conversion_record&quot;);</span>
-<span class="nc" id="L140">            stmt.execute(&quot;DELETE FROM temperature_unit&quot;);</span>
+<span class="nc" id="L177">        try (Connection conn = getConnection();</span>
+<span class="nc" id="L178">             Statement stmt = conn.createStatement()) {</span>
+<span class="nc" id="L179">            stmt.execute(&quot;DELETE FROM conversion_record&quot;);</span>
+<span class="nc" id="L180">            stmt.execute(&quot;DELETE FROM unit_translation&quot;);</span>
+<span class="nc" id="L181">            stmt.execute(&quot;DELETE FROM temperature_unit&quot;);</span>
         }
-<span class="nc" id="L142">    }</span>
+<span class="nc" id="L183">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

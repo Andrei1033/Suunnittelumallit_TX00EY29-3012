@@ -16,6 +16,7 @@
         <junit.version>5.11.4</junit.version>
         <!-- ADDED THE MISSING PROPERTY BELOW -->
         <javafx.version>21.0.5</javafx.version>
+        <sonar.projectKey>temperature_converter</sonar.projectKey>
     </properties>
 
     <dependencies>
@@ -151,6 +152,13 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+
+            <!-- SonarQube Maven Plugin -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>5.3.0.6276</version> <!-- Актуальная версия, можно проверить на Maven Central -->
             </plugin>
 
         </plugins>

@@ -1,8 +1,13 @@
 org\example\TemperatureConverter.class
 org\example\DaoElements\TemperatureUnitDAO.class
+org\example\view\TemperatureApp$1.class
 org\example\DaoElements\TempRecordDAO.class
 org\example\view\TemperatureApp.class
 org\example\DBConnectors\TemperatureUnit.class
 org\example\DBConnectors\DBConnection.class
+org\example\view\FontSupport.class
+org\example\controller\TemperatureController$1.class
 org\example\DBConnectors\TempRecord.class
 org\example\Main.class
+org\example\I18n\I18n.class
+org\example\controller\TemperatureController.class

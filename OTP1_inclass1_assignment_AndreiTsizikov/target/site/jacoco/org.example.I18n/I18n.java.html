@@ -4,41 +4,85 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+/**
+ * Loads the UTF-8 encoded MessagesBundle_xx_XX.properties files.
+ * Missing keys / unsupported locales fall back to English instead of crashing.
+ */
 public final class I18n {
 
     private static final String BUNDLE_BASE = &quot;MessagesBundle&quot;;
-<span class="nc" id="L14">    private static Locale current = Locale.US;</span>
-<span class="nc" id="L15">    private static ResourceBundle bundle = load(current);</span>
+
+<span class="nc" id="L20">    public static final Locale DEFAULT_LOCALE = Locale.of(&quot;en&quot;, &quot;US&quot;);</span>
+
+    /** Order = order shown in the language selector. */
+<span class="nc" id="L23">    public static final List&lt;Locale&gt; SUPPORTED = List.of(</span>
+            DEFAULT_LOCALE,
+<span class="nc" id="L25">            Locale.of(&quot;fi&quot;, &quot;FI&quot;),</span>
+<span class="nc" id="L26">            Locale.of(&quot;sv&quot;, &quot;SE&quot;),</span>
+<span class="nc" id="L27">            Locale.of(&quot;ja&quot;, &quot;JP&quot;),</span>
+<span class="nc" id="L28">            Locale.of(&quot;ar&quot;, &quot;AR&quot;)</span>
+    );
+
+<span class="nc" id="L31">    private static final ResourceBundle FALLBACK = load(DEFAULT_LOCALE);</span>
+
+<span class="nc" id="L33">    private static Locale current = DEFAULT_LOCALE;</span>
+<span class="nc" id="L34">    private static ResourceBundle bundle = FALLBACK;</span>
 
     private I18n() {}
 
     public static void setLocale(Locale locale) {
-<span class="nc" id="L20">        current = locale;</span>
-<span class="nc" id="L21">        bundle = load(locale);</span>
-<span class="nc" id="L22">    }</span>
+<span class="nc" id="L39">        Locale supported = findSupported(locale);</span>
+<span class="nc" id="L40">        current = supported;</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        bundle = supported.equals(DEFAULT_LOCALE) ? FALLBACK : load(supported);</span>
+<span class="nc" id="L42">    }</span>
 
     public static Locale getLocale() {
-<span class="nc" id="L25">        return current;</span>
+<span class="nc" id="L45">        return current;</span>
     }
 
     public static String get(String key) {
-<span class="nc" id="L29">        return bundle.getString(key);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (bundle.containsKey(key)) {</span>
+<span class="nc" id="L50">            return bundle.getString(key);</span>
+        }
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (FALLBACK.containsKey(key)) {</span>
+<span class="nc" id="L53">            return FALLBACK.getString(key);</span>
+        }
+<span class="nc" id="L55">        return key;</span>
+    }
+
+    /** Localized display name of a unit stored in the DB (Celsius, Fahrenheit, Kelvin). */
+    public static String unitName(String dbName) {
+<span class="nc" id="L60">        String key = &quot;unit.&quot; + dbName;</span>
+<span class="nc" id="L61">        String value = get(key);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        return value.equals(key) ? dbName : value;</span>
+    }
+
+    private static Locale findSupported(Locale locale) {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (locale != null) {</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            for (Locale l : SUPPORTED) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                if (l.getLanguage().equals(locale.getLanguage())) {</span>
+<span class="nc" id="L69">                    return l;</span>
+                }
+<span class="nc" id="L71">            }</span>
+        }
+<span class="nc" id="L73">        return DEFAULT_LOCALE;</span>
     }
 
     private static ResourceBundle load(Locale locale) {
-<span class="nc" id="L33">        String path = &quot;/&quot; + BUNDLE_BASE + &quot;_&quot; + locale + &quot;.properties&quot;;</span>
-<span class="nc" id="L34">        try (InputStream in = I18n.class.getResourceAsStream(path)) {</span>
-<span class="nc bnc" id="L35" title="All 2 branches missed.">            if (in == null) {</span>
-<span class="nc" id="L36">                throw new IllegalStateException(&quot;Missing resource: &quot; + path);</span>
+<span class="nc" id="L77">        String path = &quot;/&quot; + BUNDLE_BASE + &quot;_&quot; + locale + &quot;.properties&quot;;</span>
+<span class="nc" id="L78">        try (InputStream in = I18n.class.getResourceAsStream(path)) {</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            if (in == null) {</span>
+<span class="nc" id="L80">                throw new IllegalStateException(&quot;Missing resource: &quot; + path);</span>
             }
-            // UTF-8 decoding is the key requirement here
-<span class="nc" id="L39">            return new PropertyResourceBundle(new InputStreamReader(in, StandardCharsets.UTF_8));</span>
-<span class="nc" id="L40">        } catch (IOException e) {</span>
-<span class="nc" id="L41">            throw new IllegalStateException(&quot;Could not load &quot; + path, e);</span>
+            // Explicit UTF-8 decoding (PropertyResourceBundle(InputStream) would use ISO-8859-1 on Java 8)
+<span class="nc" id="L83">            return new PropertyResourceBundle(new InputStreamReader(in, StandardCharsets.UTF_8));</span>
+<span class="nc" id="L84">        } catch (IOException e) {</span>
+<span class="nc" id="L85">            throw new IllegalStateException(&quot;Could not load &quot; + path, e);</span>
         }
     }
 }
