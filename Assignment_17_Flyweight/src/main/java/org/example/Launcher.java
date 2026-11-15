@@ -3,6 +3,7 @@ package org.example;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.example.factory.RandomTileFactory;
@@ -20,7 +21,7 @@ public class Launcher extends Application {
 
         TileFactory tileFactory = new RandomTileFactory();
 
-        Map map = tileFactory.createMap(15, 20);
+        Map map = tileFactory.createMap(100, 100);
 
 
         // PHASE 2: Render the map
@@ -36,17 +37,17 @@ public class Launcher extends Application {
 
         // Display the map
 
-        StackPane root = new StackPane(canvas);
+        ScrollPane scrollPane = new ScrollPane(canvas);
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(scrollPane, 850, 600);
 
         stage.setTitle("RPG Map Generator");
         stage.setScene(scene);
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.show();
 
 
-        // Display Flyweight statistics
+        // Print Flyweight statistics
 
         System.out.println(
                 "Total tiles: " +

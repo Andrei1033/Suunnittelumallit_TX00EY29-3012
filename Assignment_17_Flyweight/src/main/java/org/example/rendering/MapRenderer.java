@@ -7,7 +7,7 @@ import org.example.model.Tile;
 
 public class MapRenderer {
 
-    private static final int TILE_SIZE = 40;
+    private static final int TILE_SIZE = 32;
 
     private final TileGraphicFactory graphicFactory;
 

@@ -12,6 +12,12 @@ public abstract class TileFactory {
 
     public Map createMap(int rows, int columns) {
 
+        if (rows <= 0 || columns <= 0) {
+            throw new IllegalArgumentException(
+                    "Rows and columns must be positive"
+            );
+        }
+
         Tile[][] tiles = new Tile[rows][columns];
 
         TerrainType[] terrainTypes = TerrainType.values();
