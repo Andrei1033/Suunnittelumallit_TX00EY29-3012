@@ -1,4 +1,4 @@
-OTP1_inclass1_assignment_AndreiTsizikov - README
+## OTP1_inclass1_assignment_AndreiTsizikov - README
 
 1. Assignment Description
 This repository contains a Temperature Converter assignment implemented in Java with a JavaFX GUI, H2 persistence, and unit tests. Deliverables in this folder: source (src/), build (target/), pom.xml, Dockerfile, Jenkinsfile, and test reports. You can copy the OTP1_inclass1_assignment_AndreiTsizikov folder and run the project as instructed below.
@@ -54,5 +54,15 @@ Notes
 
 Contact
 - Author: Andrei Tsizikov
+
+## Database localization (Assignment 6)
+
+This project uses the **translation table** approach. `temperature_unit` stores the language-neutral unit key, symbol and category once. `unit_translation` stores one row per unit and language (`unit_id`, `lang`, `name`, `description`) and references `temperature_unit(id)` with a foreign key. The unique constraint on `(unit_id, lang)` prevents duplicate translations.
+
+`DBConnection.initialize()` creates the tables and idempotently seeds unit labels and descriptions in English (`en`), Finnish (`fi`), Swedish (`sv`), Japanese (`ja`) and Arabic (`ar`). The catalogue includes temperature, speed, distance and time units. `TemperatureUnitDAO.findAll(language)` obtains the selected translation with an English fallback using `COALESCE`; the temperature GUI filters the catalogue to temperature units. The language selector changes the ResourceBundle for static interface labels and the language passed to the DAO for database labels. Unit names used by conversion calculations remain language-independent.
+
+**Why this approach:** translations are separated from measurement data, non-text attributes are not duplicated for every language, and adding a language requires inserting translation rows rather than altering the schema. The trade-off is the additional JOIN in localized queries.
+
+`init.sql` contains the database schema. The application also creates/migrates the tables and inserts the starter data automatically when it starts.
 
 (End of README)
