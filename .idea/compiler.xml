@@ -6,9 +6,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Assignment_11_Memento" />
+        <module name="Assignment_19_Mediator" />
         <module name="OTP1_inclass1_assignment_AndreiTsizikov" />
         <module name="Assignment_17_Flyweight" />
-        <module name="Assignment_11_Memento" />
       </profile>
     </annotationProcessing>
   </component>
