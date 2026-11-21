@@ -3,7 +3,7 @@ package org.example;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.example.client.ChatClient;
-import org.example.controller.ChatController;
+import org.example.controller_controller_controller_controller_controller_controller.ChatController;
 import org.example.mediator.ChatMediator;
 import org.example.mediator.ConcreteChatMediator;
 

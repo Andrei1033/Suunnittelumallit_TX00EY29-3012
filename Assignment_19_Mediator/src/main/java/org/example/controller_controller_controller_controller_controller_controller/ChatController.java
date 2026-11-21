@@ -1,4 +1,4 @@
-package org.example.controller;
+package org.example.controller_controller_controller_controller_controller_controller;
 
 import javafx.stage.Stage;
 import org.example.client.ChatClient;

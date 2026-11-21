@@ -1,4 +1,4 @@
-package org.example.controller;
+package org.example.controller_controller_controller_controller_controller_controller;
 
 import org.example.DBConnectors.TempRecord;
 import org.example.DBConnectors.TemperatureUnit;

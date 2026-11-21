@@ -4,7 +4,7 @@ import org.example.DBConnectors.DBConnection;
 import org.example.DBConnectors.TempRecord;
 import org.example.DBConnectors.TemperatureUnit;
 import org.example.I18n.I18n;
-import org.example.controller.TemperatureController;
+import org.example.controller_controller_controller_controller_controller_controller.TemperatureController;
 
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
